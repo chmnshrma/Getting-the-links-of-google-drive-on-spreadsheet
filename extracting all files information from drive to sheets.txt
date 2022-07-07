@@ -1,0 +1,41 @@
+function myfun() {
+  var sh = SpreadsheetApp.getActiveSheet();
+  sh.clear();
+  sh.appendRow(["parent","folder", "name", "update", "size", "URL", "ID", "description", "type"]);
+  
+    var parentFolder =DriveApp.getFolderById("1nDupj_wgPWVTGhC2c_1moVWhPYgmZX6Q");
+    listFiles(parentFolder,parentFolder.getName())
+    listSubFolders(parentFolder,parentFolder.getName());
+  } 
+
+
+function listSubFolders(parentFolder,parent) {
+  var childFolders = parentFolder.getFolders();
+  while (childFolders.hasNext()) {
+    var childFolder = childFolders.next();
+    Logger.log("Fold : " + childFolder.getName());
+    listFiles(childFolder,parent)
+    listSubFolders(childFolder,parent + "|" + childFolder.getName());
+  }
+}
+
+function listFiles(fold,parent){
+  var sh = SpreadsheetApp.getActiveSheet();
+  var data = [];
+  var files = fold.getFiles();
+  while (files.hasNext()) {
+    var file = files.next();
+    data = [ 
+      parent,
+      fold.getName(),
+      file.getName(),
+      file.getLastUpdated(),
+      file.getSize(),
+      file.getUrl(),
+      file.getId(),
+      file.getDescription(),
+      file.getMimeType()
+      ];
+    sh.appendRow(data);
+  }
+}
